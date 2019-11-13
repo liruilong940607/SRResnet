@@ -50,7 +50,7 @@ parser.add_argument("--dataset", type=str) # [spec, disph, displ, albedo, albedo
 
 class Dataset():
     def __init__(self, dataset):
-        if dataset == "albedo":
+        if dataset == "albedo" or dataset == "albedo256":
             self.HR_dir = "/home/ICT2000/rli/mnt/glab2/ForRuilong/home/workspace/SuperResolution/mmsr/datasets/albedo_train_sub/*.exr"
             # RGB
             self.mean = np.array([0.03996306, 0.07294353, 0.0922085])
@@ -65,6 +65,18 @@ class Dataset():
             # RGB
             self.mean = np.array([-5.6566824e-07, -5.6566824e-07, -5.6566824e-07])
             self.std = np.array([0.00336712, 0.00336712, 0.00336712])
+        elif dataset == "displ":
+            self.HR_dir = "/home/ICT2000/rli/mnt/glab2/ForRuilong/home/workspace/SuperResolution/mmsr/datasets/displ_train_sub/*.exr"
+            # RGB
+            self.mean = np.array([-0.00019921, -0.00019921, -0.00019921])
+            self.std = np.array([0.03625935, 0.03625935, 0.03625935])
+        elif dataset == "dispAll":
+            self.HR_dir = "/home/ICT2000/rli/mnt/glab2/ForRuilong/home/workspace/SuperResolution/mmsr/datasets/dispAll_train_sub/*.exr"
+            # RGB
+            self.mean = np.array([-0.00019921, -0.00019921, -0.00019921])
+            self.std = np.array([0.03625935, 0.03625935, 0.03625935])
+        else:
+            assert False
     
         self.dataset = dataset
         self.images = glob.glob(self.HR_dir)
@@ -98,6 +110,8 @@ class Dataset():
             hr_img = hr_img[x:x+480, y:y+480, :].copy()
         else:
             hr_img = cv2.imread(self.images[index], cv2.IMREAD_UNCHANGED)
+        if self.dataset == "albedo256":
+            hr_img = cv2.resize(hr_img, (0,0), fx=0.25, fy=0.25)
         
         hr_img = (hr_img[:, :, ::-1] - self.mean) / self.std
         
